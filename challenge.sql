@@ -23,3 +23,34 @@ JOIN order_items  oi ON oi.order_id   = o.id
 GROUP BY c.id
 ORDER BY total_spend DESC
 LIMIT 5;
+
+
+-- =============================================================================
+-- Revenue by product category — all orders
+-- Establishes the baseline category ranking before any status filtering.
+-- =============================================================================
+
+SELECT
+    p.category,
+    SUM(oi.quantity * oi.unit_price) AS revenue
+FROM order_items  oi
+JOIN products     p  ON p.id = oi.product_id
+GROUP BY p.category
+ORDER BY revenue DESC;
+
+
+-- =============================================================================
+-- Revenue by product category — Delivered orders only
+-- Isolates confirmed revenue (goods that actually reached customers) to see
+-- whether category rankings shift when undelivered volume is removed.
+-- =============================================================================
+
+SELECT
+    p.category,
+    SUM(oi.quantity * oi.unit_price) AS revenue
+FROM order_items  oi
+JOIN products     p  ON p.id  = oi.product_id
+JOIN orders       o  ON o.id  = oi.order_id
+WHERE o.status = 'Delivered'
+GROUP BY p.category
+ORDER BY revenue DESC;
