@@ -1,8 +1,11 @@
-# SQLite Analytics — Coding Challenge
+# SQLite Analytics
 
-## Project
-ISM 4212 coding challenge. Database: `bais_sqlite_lab.db` (SQLite).
-Files to produce: `challenge.sql` and `INSIGHTS.md`.
+## Overview
+Exploratory SQL analytics against a relational SQLite database covering customer revenue,
+product performance, compensation analysis, and geographic loyalty segmentation.
+
+## Database
+`bais_sqlite_lab.db` (SQLite)
 
 ## Schema
 - departments(id, name)
@@ -17,43 +20,45 @@ Key relationships:
 - Orders → Customers (many-to-one via customer_id)
 - Order Items → Orders and Products (many-to-one each)
 
-## Tasks to complete
+## Analyses
 
-### Task 1 — Top 5 Customers by Total Spend
+### Customer Lifetime Value — Top Spenders
 - Join orders → order_items → customers
 - Line total = quantity × unit_price at item level
 - Roll up to customer, sort descending, LIMIT 5
 - Output: customer full name, total_spend
-- Do NOT filter by status (include all orders)
+- Include all order statuses for full lifetime view
 
-### Task 2 — Total Revenue by Product Category
+### Revenue by Product Category
 - Join order_items → products
-- Sum(quantity × unit_price) grouped by category
-- Sort descending by revenue
-- Optional variant: repeat for only status = 'Delivered', compare rankings
+- SUM(quantity × unit_price) grouped by category, sort descending
+- Variant: isolate Delivered orders only and compare category rankings to the all-orders baseline
 
-### Task 3 — Employees Above Department Average Salary
-- Compare each employee's salary to their department's average
+### Compensation Outliers by Department
+- Identify employees earning strictly above their department's average salary
 - Output: first_name, last_name, department name, salary, dept_avg
-- Sort by department name, then salary DESC
-- Use a subquery or CTE to calculate department averages
+- Sort by department, then salary DESC
+- Use CTE or subquery for department averages
 
-### Task 4 — Cities with Most Gold Loyalty Customers
-- Filter customers WHERE loyalty_level = 'Gold'
-- GROUP BY city, sort DESC by count, tie-break alphabetically by city
-- Extension: full loyalty distribution (Gold/Silver/Bronze counts by city)
+### Geographic Loyalty Segmentation
+- Count Gold-tier customers by city, sort DESC with alphabetical tie-break
+- Extension: full Gold/Silver/Bronze distribution by city to surface geographic patterns
 
-## challenge.sql format rules
-- Header comment at top: tool used + how results were validated
-- Each task starts with a comment: -- TASK 1, -- TASK 2, etc.
-- Consistent casing (SQL keywords uppercase), clear aliases, indentation
-- Must run without errors on bais_sqlite_lab.db
+## File Structure
+- `challenge.sql` — all queries, each section headed with a descriptive comment
+- `INSIGHTS.md` — data-driven findings with specific numbers from query results
 
-## INSIGHTS.md format rules
-- 5-10 bullet points
-- Each bullet is specific and data-driven (include actual numbers from results)
-- Cover: top customer findings, category revenue breakdown, salary outliers, geographic loyalty patterns
-- Keep it concise, no fluff
+## SQL Style
+- Keywords uppercase, consistent indentation, meaningful aliases
+- Descriptive section comments (not task numbers)
+- All queries validated against bais_sqlite_lab.db via VS Code SQLTools
 
-## Validation approach
-After writing each query, run it in VS Code + SQLTools SQLite driver against bais_sqlite_lab.db and verify row counts and totals look reasonable before finalizing.
+## Commit Guidelines
+- Commit after each logical analysis is complete and validated
+- Commit messages should read like real analytical work, examples:
+  - `add customer lifetime value query and initial findings`
+  - `segment revenue by product category, add delivered-only variant`
+  - `identify compensation outliers using dept avg CTE`
+  - `add geographic loyalty distribution and city-level segmentation`
+  - `finalize insights and clean up query formatting`
+- Never commit broken SQL — validate before every commit
