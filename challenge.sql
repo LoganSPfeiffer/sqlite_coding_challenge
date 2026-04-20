@@ -80,3 +80,34 @@ JOIN departments  d   ON d.id  = e.department_id
 JOIN dept_avg     da  ON da.department_id = e.department_id
 WHERE e.salary > da.avg_salary
 ORDER BY d.name, e.salary DESC;
+
+
+-- =============================================================================
+-- Gold-tier customers by city — identifies the highest-value geographic markets
+-- Sorted by count descending, then alphabetically to break ties cleanly.
+-- =============================================================================
+
+SELECT
+    city,
+    COUNT(*) AS gold_customers
+FROM customers
+WHERE loyalty_level = 'Gold'
+GROUP BY city
+ORDER BY gold_customers DESC, city ASC;
+
+
+-- =============================================================================
+-- Full loyalty tier distribution by city
+-- Extends the Gold-only view to show Silver and Bronze alongside Gold,
+-- revealing whether cities have mixed tiers or are dominated by one segment.
+-- =============================================================================
+
+SELECT
+    city,
+    SUM(CASE WHEN loyalty_level = 'Gold'   THEN 1 ELSE 0 END) AS gold,
+    SUM(CASE WHEN loyalty_level = 'Silver' THEN 1 ELSE 0 END) AS silver,
+    SUM(CASE WHEN loyalty_level = 'Bronze' THEN 1 ELSE 0 END) AS bronze,
+    COUNT(*)                                                    AS total
+FROM customers
+GROUP BY city
+ORDER BY gold DESC, city ASC;
