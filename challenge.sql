@@ -54,3 +54,29 @@ JOIN orders       o  ON o.id  = oi.order_id
 WHERE o.status = 'Delivered'
 GROUP BY p.category
 ORDER BY revenue DESC;
+
+
+-- =============================================================================
+-- Employees earning above their department's average salary
+-- CTE computes per-department averages first; the main query then filters to
+-- only employees who beat that threshold, surfacing true outliers per team.
+-- =============================================================================
+
+WITH dept_avg AS (
+    SELECT
+        department_id,
+        AVG(salary) AS avg_salary
+    FROM employees
+    GROUP BY department_id
+)
+SELECT
+    e.first_name,
+    e.last_name,
+    d.name                      AS department,
+    e.salary,
+    ROUND(da.avg_salary, 2)     AS dept_avg
+FROM employees    e
+JOIN departments  d   ON d.id  = e.department_id
+JOIN dept_avg     da  ON da.department_id = e.department_id
+WHERE e.salary > da.avg_salary
+ORDER BY d.name, e.salary DESC;
